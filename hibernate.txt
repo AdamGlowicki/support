@@ -1,0 +1,163 @@
+Dzielenie encji na dwie tabele
+
+@Entity
+@Table(name = "PRACOWNICY")
+@SecondaryTable(name = "ADRESY", pkJoinColumns = @PrimaryKeyJoinColumn(name = "pracownik_id"))   //pkJoinColumns = @PrimaryKeyJoinColumn(name = "pracownik_id") zamienia mi w tabeli adresy nazwe kolumny id dla pracownikow na pracownik_id
+public class Pracownik {
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "imie")
+    private String imie;
+
+    @Column(name = "nazwisko")
+    private String nazwisko;
+
+    ////////////////////////// Osobna tabela
+
+    @Column(table = "ADRESY", name = "miejscowosc")
+    private String miejscowosc;
+
+    @Column(table = "ADRESY", name = "kodPocztowy")
+    private String kodPocztow;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+OneToOne
+
+@Entity
+@Table(name = "WLASCICIEL")
+public class Wlasciciel {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "imie")
+    private String imie;
+
+    @Column(name = "nazwisko")
+    private String nazwisko;
+
+    @OneToOne
+    private Cat cat;
+}
+
+@Entity
+@Table(name = "KOT")
+public class Cat {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "imie")
+    private String imie;
+
+    @OneToOne(mappedBy = "cat")   // mam pewnosc ze jak pobiore z bazy kota to ten wlasciciel bedzie tym wlascicielem
+    private Wlasciciel wlasciciel;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ManyToMany
+
+@Entity
+@Table(name = "PRACOWNIK")
+public class Pracownik {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "imie")
+    private String imie;
+
+    @Column(name = "nazwisko")
+    private String nazwisko;
+
+    @ManyToMany(mappedBy = "pracownik")
+    @JoinTable(
+            name = "pracownicy_w_projektach",   //nazwa tabeli laczacej
+            joinColumns = {@JoinColumn(name = "projekt_id")},   //tu przechowuje identyfikatory projektu bo tu mam JoinTable
+            inverseJoinColumns = {@JoinColumn(name = "pracownik_id")}  //tu przechowuje identyfikatory praconika
+    )
+    private List<Projekt> projekt;
+}
+
+@Entity
+@Table(name = "PROJEKT")
+public class Projekt {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private long id;
+
+    @ManyToMany
+    private List<Pracownik> pracwnik;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+OneToMany
+
+@Entity
+@Table(name = "PRACOWNIK")
+public class Pracownik {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "imie")
+    private String imie;
+
+    @Column(name = "nazwisko")
+    private String nazwisko;
+
+    @OneToMany(mappedBy = "pracownik") // laczy mi pracownika z teefonem
+    private List<Telefon> telefon;
+
+}
+
+@Entity
+@Table(name = "TELEFON")
+public class Telefon {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "typ")
+    private String typ;
+
+    @Column(name = "numer")
+    @JoinColumn(name = "owner_id")
+    private String numer;
+
+    @ManyToOne
+    @JoinColumn(name = "wlasciciel_id") // ta adnotacja musi byc tu gdzie mamy wiele obietow
+    private Pracownik pracownik;
+}
+
+
+
+
+
+
+
+
