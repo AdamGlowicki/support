@@ -1,0 +1,72 @@
+package com.glowicki.ksb2;
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/products")  //  nie potrzebuje parametru do metody
+public class ProductApi {
+
+//PARAMETER
+    @GetMapping
+    @GetMapping("/products")
+    @RequestMapping(value = "/products", method = RequestMethod.GET)  // do tej metody odwoluja sie wszystkie metody http, mozna ją od razu inicjalizować
+    @RequestMapping(method = RequestMethod.GET)  // jeśli mam tu wartosc value a na klasie RequestMapping to adrres = /product/product
+    public String getProducts(@RequestParam String name,
+                              @RequestParam(required = false, defaultValue = "") String surname) {   // w taki sposob ddaje parametry
+        return "hello " + name + surname;
+    }
+
+    //PATH
+    @GetMapping("/{name}")                                     // dodaje wartosc po ukosniku np: http://localhost:8080/products/adam
+    public String getProducts(@PathVariable String name) {
+        return "hello " + name;
+    }
+
+    //HEADER                       // dodaje wartosc w postmanie w headerze
+    @GetMapping                                     
+    public String getProducts(@RequestHeader String name) {
+        return "hello " + name;
+    }
+
+   @RequestMapping(value = "/{app}/conf/{fnm}", method=RequestMethod.GET)   // więcej niż jeden paramert dla metody
+    public ResponseEntity<?> getConf(@PathVariable("app") String app, @PathVariable("fnm") String fnm) {
+   log.debug("AppName:" + app);
+   log.debug("fName:" + fnm);
+           ...
+           return ...
+  }
+
+    //BODY
+    @GetMapping
+    public String getProducts(@RequestBody String name) {
+        return "hello " + name;
+    }
+
+    @PostMapping
+//    @PostMapping("/products") // uzywane kiedy nie ma adnotacji na klasie @RequestMapping("/products")
+    public String addProducts() {
+        return "hello world with post";
+    }
+
+    @PostMapping
+    public ResponseEntity<Car> addCar(@RequestBody Car car) {  // tutaj jako parametr np format JSON podaje obiekt
+        boolean add = cars.add(car);
+        
+        if (add) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @PutMapping
+//    @PutMapping("/products")  // uzywane kiedy nie ma adnotacji na klasie @RequestMapping("/products")
+    public String modifyProducts() {
+        return "hello world with put";
+    }
+
+    @DeleteMapping
+//    @DeleteMapping("/products")  // uzywane kiedy nie ma adnotacji na klasie @RequestMapping("/products")
+    public String remveProducts() {
+        return "hello world with DELETE";
+    }
+}
